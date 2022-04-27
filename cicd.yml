@@ -1,0 +1,1 @@
+#CODE_ANALYSIS_COMMAND: mvn sonar:sonar --settings /mnt/settings.xml -Dsonar.projectKey=ITxxxx -Dsonar.host.url=http://sonar.sis.ad.bia.itau -Dsonar.login=xxxx

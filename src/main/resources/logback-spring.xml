@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+
+    <include resource="org/springframework/boot/logging/logback/defaults.xml"/>
+    <include resource="org/springframework/boot/logging/logback/console-appender.xml"/>
+
+    <springProfile name="!local">
+
+        <springProperty scope="context" name="springAppName" source="spring.application.name"/>
+        <timestamp key="DATE" datePattern="yyyyMMdd"/>
+        <timestamp key="START_TIMESTAMP" datePattern="yyyyMMddHHmmssSSS"/>
+        <property name="LOG_FILES_DIRECTORY" value="${LOG_FILES_DIRECTORY:-/tmp}"/>
+        <property name="LOG_FILE_BASE_NAME" value="log-${HOSTNAME}-${springAppName}-${START_TIMESTAMP}"/>
+        <property name="LOG_FILE_ROLLING_PATTERN" value="${LOG_FILE_ROLLING_PATTERN:-%i.log.gz}"/>
+
+        <!-- Appender to log to file in a JSON format -->
+        <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>${LOG_FILES_DIRECTORY}/${LOG_FILE_BASE_NAME}.log</file>
+            <rollingPolicy class="ch.qos.logback.core.rolling.FixedWindowRollingPolicy">
+                <fileNamePattern>${LOG_FILES_DIRECTORY}/${LOG_FILE_BASE_NAME}-${LOG_FILE_ROLLING_PATTERN}
+                </fileNamePattern>
+                <minIndex>${LOG_ROLLING_MIN_INDEX:-1}</minIndex>
+                <maxIndex>${LOG_ROLLING_MAX_INDEX:-1}</maxIndex>
+            </rollingPolicy>
+            <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
+                <maxFileSize>${LOG_MAX_FILE_SIZE:-10MB}</maxFileSize>
+            </triggeringPolicy>
+            <append>true</append>
+            <encoder class="net.logstash.logback.encoder.LoggingEventCompositeJsonEncoder">
+                <providers>
+                    <mdc/>
+                    <timestamp>
+                        <timeZone>UTC</timeZone>
+                    </timestamp>
+                    <arguments/>
+                    <tags/>
+                    <stackTrace/>
+                    <pattern>
+                        <pattern>
+                            {
+                            "date": "%d",
+                            "level": "%level",
+                            "service": "${springAppName:-}",
+                            "trace": "%X{X-B3-TraceId:-}",
+                            "span": "%X{X-B3-SpanId:-}",
+                            "parent": "%X{X-B3-ParentSpanId:-}",
+                            "exportable": "%X{X-Span-Export:-}",
+                            "pid": "${PID:-}",
+                            "thread": "%thread",
+                            "class": "%logger{40}",
+                            "message": "%message"
+                            }
+                        </pattern>
+                    </pattern>
+                </providers>
+            </encoder>
+        </appender>
+
+        <appender name="ASYNC_FILE" class="ch.qos.logback.classic.AsyncAppender">
+            <queueSize>${LOG_ASYNC_FILE_QUEUE_SIZE:-256}</queueSize>
+            <appender-ref ref="FILE"/>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="ASYNC_FILE"/>
+        </root>
+    </springProfile>
+
+    <appender name="ASYNC_CONSOLE" class="ch.qos.logback.classic.AsyncAppender">
+        <queueSize>${LOG_ASYNC_CONSOLE_QUEUE_SIZE:-256}</queueSize>
+        <appender-ref ref="CONSOLE"/>
+    </appender>
+
+    <root level="INFO">
+        <appender-ref ref="ASYNC_CONSOLE"/>
+    </root>
+
+</configuration>

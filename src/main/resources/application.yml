@@ -1,0 +1,29 @@
+spring:
+  application:
+    name: ${APPLICATION_NAME:java8-spring-boot-seed}
+  profiles:
+    group:
+      prod-group: default,prod,production
+---
+spring:
+  config:
+    activate:
+      on-profile: prod-group
+
+rest.client.default.timeout: ${REST_CLIENT_DEFAULT_TIMEOUT}
+
+seed:
+  character-repository:
+    url: ${SW_CHARACTER_REPOSITORY_URL}
+---
+spring:
+  config:
+    activate:
+      on-profile: local
+    import: optional:configserver:http://localhost:8888
+
+rest.client.default.timeout: 10000
+
+seed:
+  character-repository:
+    url: https://swapi.dev/api/people/{id}/

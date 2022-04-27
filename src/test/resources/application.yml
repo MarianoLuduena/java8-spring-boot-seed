@@ -1,0 +1,13 @@
+spring:
+  application:
+    name: java8-spring-boot-seed
+  cloud:
+    config:
+      enabled: false
+  main:
+    allow-bean-definition-overriding: true
+
+rest:
+  client:
+    default:
+      timeout: 10000
