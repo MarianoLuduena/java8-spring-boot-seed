@@ -8,8 +8,12 @@
 
 1. Clone the repository.
 2. Download dependencies via `./mvnw install` (or use your IDE's auto-import).
-3. Run tests with `./mvnw test` or `./mvnw verify` (to validate rules with JaCoCo).
+3. Run unit tests with `./mvnw test` or `./mvnw verify` (to validate rules with JaCoCo).
 4. Start application with `SPRING_PROFILES_ACTIVE=local ./mvnw spring-boot:run`.
+
+## Run integration tests with embedded Karate
+
+`./mvnw test -Dtest=KarateRunner -DargLine=-Dkarate.env={ENVIRONMENT}`
 
 ## Kickstart a project
 
