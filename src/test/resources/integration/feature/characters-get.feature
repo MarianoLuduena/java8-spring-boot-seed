@@ -5,6 +5,8 @@ Feature: Get Star Wars characters
     * def lukeUrl = baseUrl + '/api/v1/characters/1'
     * def darthVaderUrl = baseUrl + '/api/v1/characters/4'
     * def notFoundCharacterUrl = baseUrl + '/api/v1/characters/9999'
+    * def authFeature = callonce read('../common/authorization.feature') {"user": "#(username)", "pass": "#(password)"}
+    * def authHeader = 'Bearer ' + authFeature.jwt
 
     * def characterSchema =
     """
@@ -39,6 +41,7 @@ Feature: Get Star Wars characters
 
   Scenario: Get Luke
     Given url lukeUrl
+    And header Authorization = authHeader
     When method GET
     Then status 200
     And match response == characterSchema
@@ -47,6 +50,7 @@ Feature: Get Star Wars characters
 
   Scenario: Get Luke's dad
     Given url darthVaderUrl
+    And header Authorization = authHeader
     When method GET
     Then status 200
     And match response == characterSchema
@@ -55,6 +59,7 @@ Feature: Get Star Wars characters
 
   Scenario: Get character with an id that does not exist
     Given url notFoundCharacterUrl
+    And header Authorization = authHeader
     When method GET
     Then status 404
     And match response == errorSchema
@@ -62,3 +67,8 @@ Feature: Get Star Wars characters
     And match response.status == 404
     And match response.code == 104
     And match response.detail == 'Star Wars character not found'
+
+  Scenario: Get character without credentials
+    Given url lukeUrl
+    When method GET
+    Then status 401

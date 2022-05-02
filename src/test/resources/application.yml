@@ -7,6 +7,15 @@ spring:
   main:
     allow-bean-definition-overriding: true
 
+keycloak:
+  enabled: false
+  realm: mock
+  resource: mock
+  auth-server-url: http://mock
+  bearer-only: true
+  credentials:
+    secret: mock
+
 rest:
   client:
     default:

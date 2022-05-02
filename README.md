@@ -24,13 +24,36 @@ accomplish that:
 2. Rename root directory `java8-spring-boot-seed` to match your brand new `artifactId`.
 3. Change this README's title.
 4. Configure `cicd.yml` with Sonar's project key and login token.
-5. Rename package `seed` to something that better describes your service. Remember to update `CodingRulesTest.java` and 
-`Config.java` (they need to scan the root package to do their job).
-6. Change Spring's default application name in `application.yml`.
-7. Delete `.git` directory.
-8. Create new project in your remote repository (Github, GitLab, etc.)
-9. Follow the instructions to push your local code to the new project (`git init...`). Before pushing, you may as well 
+5. (If this is an API) Complete the steps described in the "Kickstart an API" and then continue with the rest.
+6. (If this is a BFF) Complete the steps described in the "Kickstart a BFF" and then continue with the rest.
+7. Rename package `seed` to something that better describes your service. Remember to update `CodingRulesTest.java` and 
+`Config.java` (they need to scan the root package to do their job). Remember to change whatever paths that make 
+reference to package `seed` in `pom.xml` file.
+8. Change Spring's default application name in `application.yml`.
+9. Delete `.git` directory.
+10. Create new project in your remote repository (Github, GitLab, etc.)
+11. Follow the instructions to push your local code to the new project (`git init...`). Before pushing, you may as well 
 delete this Kickstart section before committing (it won't be needed any longer).
+
+### Kickstart an API
+
+Since you are trying to setup a new API, it is necessary to get rid of Spring Security and Keycloak. In order to do 
+that, follow these steps:
+
+1. Delete the directory `src.main.java.ar.com.itau.seed.config.security`.
+2. Delete `TestSecurityConfig.class` from the `@Import` annotation in controller's tests.
+3. Delete the file `src.test.ar.com.itau.seed.config.TestSecurityConfig`.
+4. Delete Keycloak configuration from `application.yml` (inside both `main` and `test`).
+5. Delete artifacts `spring-boot-starter-security`, `keycloak-spring-boot-starter` and `keycloak-adapter-bom`
+   (dependencyManagement) from `pom.xml`.
+6. Update Karate (Cucumber) features to remove any reference to authorized requests.
+7. Remove `base-bff` and `base-error` from `spring.application.name` in `application.yml`.
+8. Update `server.servlet.context-path` to leave the `api` prefix (remove the `bff` prefix) in `application.yml`.
+
+### Kickstart a BFF
+
+1. Remove `base-api` from `spring.application.name` in `application.yml`. 
+2. Update `server.servlet.context-path` to leave the `bff` prefix (remove the `api` prefix) in `application.yml`.
 
 ## Package architecture
 

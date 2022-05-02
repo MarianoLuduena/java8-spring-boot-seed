@@ -1,20 +1,49 @@
 spring:
   application:
-    name: ${APPLICATION_NAME:java8-spring-boot-seed}
-  profiles:
-    group:
-      prod-group: default,prod,production
+    name: ${APPLICATION_NAME:java8-spring-boot-seed,base-bff,base-error,base-api}
+
+keycloak:
+  cors: true
+  bearer-only: true
+  enabled: true
+  disable-trust-manager: true
+  public-client: true
+  principal-attribute: preferred_username
+  cors-allowed-headers: "Accept,Access-Control-Allowed-Origin,Access-Control-Allowed-Methods,\
+    Access-Control-Allowed-Headers,Authorization,Content-Type,clientenv,clientname,clientver,enterpriseid"
+  cors-allowed-methods: POST,PUT,PATCH,DELETE,GET,OPTIONS
+  cors-max-age: 0
+
+springdoc:
+  swagger-ui:
+    path: /
 ---
+server:
+  port: ${PORT}
+  servlet:
+    context-path: /seed/bff-or-api/${VERSION}
+
 spring:
   config:
     activate:
-      on-profile: prod-group
+      on-profile: default
+    import: "configserver:"
+  cloud:
+    config:
+      uri: ${SPRING_CLOUD_CONFIG_URL}
+      label: ${SPRING_CLOUD_CONFIG_LABEL}
+      profile: ${SPRING_CLOUD_CONFIG_PROFILE}
 
-rest.client.default.timeout: ${REST_CLIENT_DEFAULT_TIMEOUT}
+keycloak:
+  auth-server-url: ${access-management.auth.server.url}
+  realm: ${access-management.users.realm}
+  resource: mercury
+
+rest.client.default.timeout: ${service.timeout}
 
 seed:
   character-repository:
-    url: ${SW_CHARACTER_REPOSITORY_URL}
+    url: ${seed.character-repository.url}
 ---
 spring:
   config:
@@ -22,7 +51,18 @@ spring:
       on-profile: local
     import: optional:configserver:http://localhost:8888
 
-rest.client.default.timeout: 10000
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,refresh
+
+keycloak:
+  auth-server-url: https://sso-rhsso-inte.apps.ocp-np.sis.ad.bia.itau/auth/
+  realm: HomeBankingEmpresas
+  resource: mercury
+
+rest.client.default.timeout: 5000
 
 seed:
   character-repository:

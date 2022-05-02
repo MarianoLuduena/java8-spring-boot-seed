@@ -2,6 +2,7 @@ package ar.com.itau.seed.adapter.controller;
 
 import ar.com.itau.seed.application.port.in.GetSWCharacterByIdQuery;
 import ar.com.itau.seed.config.TestConfig;
+import ar.com.itau.seed.config.TestSecurityConfig;
 import ar.com.itau.seed.mock.SWCharacterMockFactory;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.DisplayName;
@@ -24,7 +25,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @DisplayName("SWCharacter Adapter Test")
 @WebMvcTest(SWCharacterControllerAdapter.class)
-@Import(TestConfig.class)
+@Import({TestConfig.class, TestSecurityConfig.class})
 public class SWCharacterControllerAdapterTest {
 
     private static final int SW_CHARACTER_ID = 4;
