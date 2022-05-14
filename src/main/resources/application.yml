@@ -21,7 +21,7 @@ springdoc:
 server:
   port: ${PORT}
   servlet:
-    context-path: /seed/bff-or-api/${VERSION}
+    context-path: /bff-or-api-or-acl/${VERSION}/seed
 
 spring:
   config:
@@ -42,6 +42,7 @@ keycloak:
 rest.client.default.timeout: ${service.timeout}
 
 seed:
+  prefix: "BFF|API|ACL-SEE:"
   character-repository:
     url: ${seed.character-repository.url}
 ---
@@ -65,5 +66,6 @@ keycloak:
 rest.client.default.timeout: 5000
 
 seed:
+  prefix: "BFF|API|ACL-SEE:"
   character-repository:
     url: https://swapi.dev/api/people/{id}/

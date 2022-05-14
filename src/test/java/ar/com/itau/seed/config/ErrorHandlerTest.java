@@ -34,6 +34,7 @@ public class ErrorHandlerTest {
 
     private final HttpServletRequest servletRequest = Mockito.mock(HttpServletRequest.class);
     private final Tracer tracer = Mockito.mock(Tracer.class);
+    private final Config config = new TestConfig().getConfig();
 
     @BeforeEach
     void setup() {
@@ -47,7 +48,7 @@ public class ErrorHandlerTest {
     @DisplayName("a Throwable should be mapped to a 500")
     void testHandleThrowable() {
         final Throwable ex = new Throwable("Some error");
-        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer);
+        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer, config);
         final ResponseEntity<ErrorHandler.ApiErrorResponse> response = handler.handleDefault(ex);
 
         final ErrorCode errorCode = ErrorCode.INTERNAL_ERROR;
@@ -64,7 +65,7 @@ public class ErrorHandlerTest {
     @DisplayName("a BadRequestRestClientException should be mapped to a 400")
     void testHandleBadRequestRestClientException() {
         final BadRequestRestClientException ex = new BadRequestRestClientException(ErrorCode.BAD_REQUEST);
-        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer);
+        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer, config);
         final ResponseEntity<ErrorHandler.ApiErrorResponse> response = handler.handleBadRequest(ex);
 
         final ErrorHandler.ApiErrorResponse expected =
@@ -81,7 +82,7 @@ public class ErrorHandlerTest {
     void testHandleConstraintViolationException() {
         final ConstraintViolationException ex =
                 new ConstraintViolationException("X must be positive", Collections.emptySet());
-        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer);
+        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer, config);
         final ResponseEntity<ErrorHandler.ApiErrorResponse> response = handler.handleBadRequest(ex);
 
         final ErrorHandler.ApiErrorResponse expected =
@@ -97,7 +98,7 @@ public class ErrorHandlerTest {
     @DisplayName("a NotFoundException should be mapped to a 404")
     void testHandleNotFoundException() {
         final NotFoundException ex = new NotFoundException(ErrorCode.RESOURCE_NOT_FOUND);
-        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer);
+        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer, config);
         final ResponseEntity<ErrorHandler.ApiErrorResponse> response = handler.handleNotFound(ex);
 
         final ErrorHandler.ApiErrorResponse expected =
@@ -113,7 +114,7 @@ public class ErrorHandlerTest {
     @DisplayName("a TimeoutRestClientException should be mapped to a 504")
     void testHandleTimeoutRestClientException() {
         final TimeoutRestClientException ex = new TimeoutRestClientException(ErrorCode.INTERNAL_ERROR);
-        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer);
+        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer, config);
         final ResponseEntity<ErrorHandler.ApiErrorResponse> response = handler.handleTimeout(ex);
 
         final ErrorHandler.ApiErrorResponse expected =
@@ -129,7 +130,7 @@ public class ErrorHandlerTest {
     @DisplayName("a RestClientGenericException should be mapped to a 500")
     void testHandleRestClientGenericException() {
         final RestClientGenericException ex = new RestClientGenericException(ErrorCode.RESOURCE_NOT_FOUND);
-        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer);
+        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer, config);
         final ResponseEntity<ErrorHandler.ApiErrorResponse> response = handler.handleRestClient(ex);
 
         final ErrorHandler.ApiErrorResponse expected =
@@ -147,7 +148,7 @@ public class ErrorHandlerTest {
         final MissingServletRequestParameterException ex =
                 new MissingServletRequestParameterException("aParameterName", "aParameterType");
 
-        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer);
+        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer, config);
         final ResponseEntity<ErrorHandler.ApiErrorResponse> response = handler.handleBadRequest(ex);
 
         final String expectedMessage = "Bad request, parameter " + ex.getParameterName() + " of type " +
@@ -170,9 +171,9 @@ public class ErrorHandlerTest {
         return ErrorHandler.ApiErrorResponse.builder()
                 .timestamp(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC))
                 .name(httpStatus.getReasonPhrase())
-                .detail(msg)
+                .description(msg)
                 .status(httpStatus.value())
-                .code(errorCode.value())
+                .code(config.getPrefix() + errorCode.value())
                 .resource(REQUEST_URL)
                 .metadata(buildMetadata())
                 .build();

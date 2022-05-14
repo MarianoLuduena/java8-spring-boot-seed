@@ -40,6 +40,7 @@ public class TestConfig {
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public Config getConfig() {
         final Config config = new Config();
+        config.setPrefix("PRE-FIX:");
 
         final Config.SWCharacterRepositoryConfig characterRepositoryConfig = new Config.SWCharacterRepositoryConfig();
         characterRepositoryConfig.setUrl("http://localhost:12345/people/{id}");

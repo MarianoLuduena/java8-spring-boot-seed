@@ -13,6 +13,8 @@ import javax.validation.constraints.NotBlank;
 @ConfigurationProperties("seed")
 public class Config {
 
+    @NotBlank
+    private String prefix;
     private SWCharacterRepositoryConfig characterRepository;
 
     @Data

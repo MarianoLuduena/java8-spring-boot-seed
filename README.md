@@ -48,12 +48,14 @@ that, follow these steps:
    (dependencyManagement) from `pom.xml`.
 6. Update Karate (Cucumber) features to remove any reference to authorized requests.
 7. Remove `base-bff` and `base-error` from `spring.application.name` in `application.yml`.
-8. Update `server.servlet.context-path` to leave the `api` prefix (remove the `bff` prefix) in `application.yml`.
+8. Update `server.servlet.context-path` to leave the `api` or `acl` prefix (remove the `bff` prefix) in 
+`application.yml`. Yoy should also change the property `prefix` used to build the error codes.
 
 ### Kickstart a BFF
 
 1. Remove `base-api` from `spring.application.name` in `application.yml`. 
-2. Update `server.servlet.context-path` to leave the `bff` prefix (remove the `api` prefix) in `application.yml`.
+2. Update `server.servlet.context-path` to leave the `bff` prefix (remove the `api` prefix) in `application.yml`. Yoy 
+should also change the property `prefix` used to build the error codes.
 
 ## Package architecture
 

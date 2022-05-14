@@ -29,9 +29,9 @@ Feature: Get Star Wars characters
       "name": "#string",
       "status": "#number",
       "timestamp": "#string",
-      "code": "#number",
+      "code": "#string",
       "resource": "#string",
-      "detail": "#string",
+      "description": "#string",
       "metadata": {
         "X-B3-TraceId": "#string",
         "X-B3-SpanId": "#string"
@@ -65,8 +65,8 @@ Feature: Get Star Wars characters
     And match response == errorSchema
     And match response.name == 'Not Found'
     And match response.status == 404
-    And match response.code == 104
-    And match response.detail == 'Star Wars character not found'
+    And match response.code == 'BFF|API|ACL-SEE:104'
+    And match response.description == 'Star Wars character not found'
 
   Scenario: Get character without credentials
     Given url lukeUrl

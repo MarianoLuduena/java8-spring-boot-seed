@@ -35,10 +35,16 @@ public class ErrorHandler {
     private static final String X_B3_SPAN_ID = "X-B3-SpanId";
     private final HttpServletRequest httpServletRequest;
     private final Tracer tracer;
+    private final Config config;
 
-    public ErrorHandler(final HttpServletRequest httpServletRequest, final Tracer tracer) {
+    public ErrorHandler(
+            final HttpServletRequest httpServletRequest,
+            final Tracer tracer,
+            final Config config
+    ) {
         this.httpServletRequest = httpServletRequest;
         this.tracer = tracer;
+        this.config = config;
     }
 
     @ExceptionHandler(Throwable.class)
@@ -131,9 +137,9 @@ public class ErrorHandler {
         final ApiErrorResponse apiErrorResponse = ApiErrorResponse.builder()
                 .timestamp(ZonedDateTime.now().withZoneSameInstant(ZoneOffset.UTC))
                 .name(httpStatus.getReasonPhrase())
-                .detail(message)
+                .description(message)
                 .status(httpStatus.value())
-                .code(errorCode.value())
+                .code(this.config.getPrefix() + errorCode.value())
                 .resource(httpServletRequest.getRequestURI())
                 .metadata(Collections.unmodifiableMap(metadata))
                 .build();
@@ -151,9 +157,9 @@ public class ErrorHandler {
         Integer status;
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = DATE_PATTERN)
         ZonedDateTime timestamp;
-        Integer code;
+        String code;
         String resource;
-        String detail;
+        String description;
         Map<String, String> metadata;
     }
 
