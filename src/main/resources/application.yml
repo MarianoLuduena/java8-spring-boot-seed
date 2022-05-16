@@ -9,10 +9,6 @@ keycloak:
   disable-trust-manager: true
   public-client: true
   principal-attribute: preferred_username
-  cors-allowed-headers: "Accept,Access-Control-Allowed-Origin,Access-Control-Allowed-Methods,\
-    Access-Control-Allowed-Headers,Authorization,Content-Type,clientenv,clientname,clientver,enterpriseid"
-  cors-allowed-methods: POST,PUT,PATCH,DELETE,GET,OPTIONS
-  cors-max-age: 0
 
 springdoc:
   swagger-ui:
@@ -43,6 +39,11 @@ rest.client.default.timeout: ${service.timeout}
 
 seed:
   prefix: "BFF|API|ACL-SEE:"
+  security-headers:
+    allowed-origin:
+    allowed-methods: POST,GET,PUT,PATCH,DELETE,OPTIONS
+    allowed-headers: "Accept,Access-Control-Allowed-Origin,Access-Control-Allowed-Methods,\
+      Access-Control-Allowed-Headers,Authorization,Content-Type,clientenv,clientname,clientver,enterpriseid"
   character-repository:
     url: ${seed.character-repository.url}
 ---
@@ -67,5 +68,9 @@ rest.client.default.timeout: 5000
 
 seed:
   prefix: "BFF|API|ACL-SEE:"
+  security-headers:
+    allowed-origin:
+    allowed-methods:
+    allowed-headers:
   character-repository:
     url: https://swapi.dev/api/people/{id}/

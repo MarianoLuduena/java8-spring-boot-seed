@@ -40,15 +40,19 @@ delete this Kickstart section before committing (it won't be needed any longer).
 Since you are trying to setup a new API, it is necessary to get rid of Spring Security and Keycloak. In order to do 
 that, follow these steps:
 
-1. Delete the directory `src.main.java.ar.com.itau.seed.config.security`.
-2. Delete `TestSecurityConfig.class` from the `@Import` annotation in controller's tests.
-3. Delete the file `src.test.ar.com.itau.seed.config.TestSecurityConfig`.
-4. Delete Keycloak configuration from `application.yml` (inside both `main` and `test`).
-5. Delete artifacts `spring-boot-starter-security`, `keycloak-spring-boot-starter` and `keycloak-adapter-bom`
+1. Delete the directories `src/main/java/ar/com/itau/seed/config/security` and 
+`src/main/java/ar/com/itau/seed/config/security`.
+2. Delete `AccessControlInterceptor` instance from the `AppConfig` class.
+3. Delete `SecurityHeaders` inner class from `Config` and `TestConfig` classes. `security-headers` section in 
+`application.yml` can be safely removed after that.
+4. Delete `TestSecurityConfig.class` from the `@Import` annotation in controller's tests.
+5. Delete the file `src.test.ar.com.itau.seed.config.TestSecurityConfig`.
+6. Delete Keycloak configuration from `application.yml` (inside both `main` and `test`).
+7. Delete artifacts `spring-boot-starter-security`, `keycloak-spring-boot-starter` and `keycloak-adapter-bom`
    (dependencyManagement) from `pom.xml`.
-6. Update Karate (Cucumber) features to remove any reference to authorized requests.
-7. Remove `base-bff` and `base-error` from `spring.application.name` in `application.yml`.
-8. Update `server.servlet.context-path` to leave the `api` or `acl` prefix (remove the `bff` prefix) in 
+8. Update Karate (Cucumber) features to remove any reference to authorized requests.
+9. Remove `base-bff` and `base-error` from `spring.application.name` in `application.yml`.`
+10. Update `server.servlet.context-path` to leave the `api` or `acl` prefix (remove the `bff` prefix) in 
 `application.yml`. Yoy should also change the property `prefix` used to build the error codes.
 
 ### Kickstart a BFF

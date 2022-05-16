@@ -6,6 +6,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.validation.annotation.Validated;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 @Data
 @Validated
@@ -15,12 +16,23 @@ public class Config {
 
     @NotBlank
     private String prefix;
+    private SecurityHeaders securityHeaders;
     private SWCharacterRepositoryConfig characterRepository;
 
     @Data
     public static class SWCharacterRepositoryConfig {
         @NotBlank
         private String url;
+    }
+
+    @Data
+    public static class SecurityHeaders {
+        @NotNull
+        private String allowedOrigin;
+        @NotNull
+        private String allowedMethods;
+        @NotNull
+        private String allowedHeaders;
     }
 
 }

@@ -1,6 +1,7 @@
 package ar.com.itau.seed.config;
 
 import ar.com.itau.seed.config.rest.LogRestTemplateInterceptor;
+import ar.com.itau.seed.config.security.AccessControlInterceptor;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
@@ -28,19 +29,23 @@ public class AppConfig implements WebMvcConfigurer {
     private static final boolean WAIT_FOR_TASK_TO_COMPLETE_ON_SHUTDOWN = true;
 
     private final TraceSleuthInterceptor traceSleuthInterceptor;
+    private final AccessControlInterceptor accessControlInterceptor;
     private final BeanFactory beanFactory;
 
     public AppConfig(
             TraceSleuthInterceptor traceSleuthInterceptor,
+            AccessControlInterceptor accessControlInterceptor,
             BeanFactory beanFactory
     ) {
         this.traceSleuthInterceptor = traceSleuthInterceptor;
+        this.accessControlInterceptor = accessControlInterceptor;
         this.beanFactory = beanFactory;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(this.traceSleuthInterceptor);
+        registry.addInterceptor(this.accessControlInterceptor);
     }
 
     @Bean("asyncExecutor")

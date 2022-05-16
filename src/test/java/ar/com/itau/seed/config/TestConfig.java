@@ -42,6 +42,12 @@ public class TestConfig {
         final Config config = new Config();
         config.setPrefix("PRE-FIX:");
 
+        final Config.SecurityHeaders securityHeaders = new Config.SecurityHeaders();
+        securityHeaders.setAllowedOrigin("*");
+        securityHeaders.setAllowedMethods("POST,GET");
+        securityHeaders.setAllowedHeaders("Accept,Content-Type,Authorization");
+        config.setSecurityHeaders(securityHeaders);
+
         final Config.SWCharacterRepositoryConfig characterRepositoryConfig = new Config.SWCharacterRepositoryConfig();
         characterRepositoryConfig.setUrl("http://localhost:12345/people/{id}");
 
