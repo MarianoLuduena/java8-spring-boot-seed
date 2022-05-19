@@ -168,7 +168,7 @@ public class ErrorHandlerTest {
         final ErrorHandler handler = new ErrorHandler(servletRequest, tracer, config);
         final ResponseEntity<ErrorHandler.ApiErrorResponse> response = handler.handleBadRequest(ex);
 
-        final String expectedMessage = "Bad request, parameter " + ex.getParameterName() + " of type " +
+        final String expectedMessage = "Parameter " + ex.getParameterName() + " of type " +
                 ex.getParameterType() + " is required";
 
         final ErrorHandler.ApiErrorResponse expected =

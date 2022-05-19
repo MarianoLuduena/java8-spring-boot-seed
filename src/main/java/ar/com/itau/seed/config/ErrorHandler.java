@@ -5,7 +5,6 @@ import ar.com.itau.seed.adapter.rest.exception.RestClientGenericException;
 import ar.com.itau.seed.adapter.rest.exception.TimeoutRestClientException;
 import ar.com.itau.seed.config.exception.ForbiddenException;
 import ar.com.itau.seed.config.exception.NotFoundException;
-import ar.com.itau.seed.config.exception.ValidationException;
 import brave.Tracer;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Builder;
@@ -26,7 +25,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Optional;
-import java.util.function.Supplier;
 
 @Slf4j
 @ControllerAdvice
@@ -69,10 +67,10 @@ public class ErrorHandler {
 
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ResponseEntity<ApiErrorResponse> handleBadRequest(MethodArgumentTypeMismatchException ex) {
-        return buildBadRequestResponseError(
-                () -> "parameter " + ex.getName() + " must be of type " +
-                        ex.getParameter().getParameterType().getSimpleName(),
-                ex);
+        log.error(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex);
+        final String message = "Parameter " + ex.getName() + " must be of type " +
+                ex.getParameter().getParameterType().getSimpleName();
+        return buildResponseError(HttpStatus.BAD_REQUEST, message, ErrorCode.BAD_REQUEST);
     }
 
     @ExceptionHandler(ForbiddenException.class)
@@ -101,18 +99,9 @@ public class ErrorHandler {
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ResponseEntity<ApiErrorResponse> handleBadRequest(MissingServletRequestParameterException ex) {
-        return buildBadRequestResponseError(
-                () -> "parameter " + ex.getParameterName() + " of type " + ex.getParameterType() + " is required",
-                ex
-        );
-    }
-
-    private ResponseEntity<ApiErrorResponse> buildBadRequestResponseError(Supplier<String> messageFn, Throwable ex) {
-        log.error(HttpStatus.BAD_REQUEST.getReasonPhrase(), ex);
-        final String message = messageFn.get();
-        final ErrorCode errorCode = ErrorCode.BAD_REQUEST;
-        final ValidationException wrappingException = new ValidationException(errorCode, message, ex);
-        return buildResponseError(HttpStatus.BAD_REQUEST, wrappingException, errorCode);
+        final String message =
+                "Parameter " + ex.getParameterName() + " of type " + ex.getParameterType() + " is required";
+        return buildResponseError(HttpStatus.BAD_REQUEST, message, ErrorCode.BAD_REQUEST);
     }
 
     private ResponseEntity<ApiErrorResponse> buildResponseError(
