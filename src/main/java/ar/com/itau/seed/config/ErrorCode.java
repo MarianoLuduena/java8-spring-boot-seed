@@ -7,7 +7,8 @@ public enum ErrorCode {
     RESOURCE_NOT_FOUND(102, "Not found"),
     CHARACTER_BAD_REQUEST(103, "Bad request querying for character"),
     CHARACTER_NOT_FOUND(104, "Star Wars character not found"),
-    CHARACTER_TIMEOUT(105, "Timeout when querying character");
+    CHARACTER_TIMEOUT(105, "Timeout when querying character"),
+    FORBIDDEN(106, "Not allowed to access the resource");
 
     private final int value;
     private final String reasonPhrase;

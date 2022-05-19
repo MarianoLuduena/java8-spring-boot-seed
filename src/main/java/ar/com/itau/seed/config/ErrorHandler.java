@@ -3,6 +3,7 @@ package ar.com.itau.seed.config;
 import ar.com.itau.seed.adapter.rest.exception.BadRequestRestClientException;
 import ar.com.itau.seed.adapter.rest.exception.RestClientGenericException;
 import ar.com.itau.seed.adapter.rest.exception.TimeoutRestClientException;
+import ar.com.itau.seed.config.exception.ForbiddenException;
 import ar.com.itau.seed.config.exception.NotFoundException;
 import ar.com.itau.seed.config.exception.ValidationException;
 import brave.Tracer;
@@ -72,6 +73,12 @@ public class ErrorHandler {
                 () -> "parameter " + ex.getName() + " must be of type " +
                         ex.getParameter().getParameterType().getSimpleName(),
                 ex);
+    }
+
+    @ExceptionHandler(ForbiddenException.class)
+    public ResponseEntity<ApiErrorResponse> handleForbidden(ForbiddenException ex) {
+        log.error(HttpStatus.FORBIDDEN.getReasonPhrase(), ex);
+        return buildResponseError(HttpStatus.FORBIDDEN, ex, ex.getCode());
     }
 
     @ExceptionHandler(NotFoundException.class)

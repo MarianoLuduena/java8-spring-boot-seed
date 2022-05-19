@@ -1,23 +1,15 @@
 package ar.com.itau.seed.config;
 
-import ar.com.itau.seed.config.rest.LogRestTemplateInterceptor;
 import ar.com.itau.seed.config.security.AccessControlInterceptor;
+import ar.com.itau.seed.config.security.AuthorizationRoleInterceptor;
 import org.springframework.beans.factory.BeanFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.beans.factory.config.ConfigurableBeanFactory;
-import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.cloud.sleuth.instrument.async.LazyTraceExecutor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Scope;
-import org.springframework.http.client.BufferingClientHttpRequestFactory;
-import org.springframework.http.client.SimpleClientHttpRequestFactory;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-import java.time.Duration;
 import java.util.concurrent.Executor;
 
 @Configuration
@@ -30,15 +22,18 @@ public class AppConfig implements WebMvcConfigurer {
 
     private final TraceSleuthInterceptor traceSleuthInterceptor;
     private final AccessControlInterceptor accessControlInterceptor;
+    private final AuthorizationRoleInterceptor authorizationRoleInterceptor;
     private final BeanFactory beanFactory;
 
     public AppConfig(
             TraceSleuthInterceptor traceSleuthInterceptor,
             AccessControlInterceptor accessControlInterceptor,
+            AuthorizationRoleInterceptor authorizationRoleInterceptor,
             BeanFactory beanFactory
     ) {
         this.traceSleuthInterceptor = traceSleuthInterceptor;
         this.accessControlInterceptor = accessControlInterceptor;
+        this.authorizationRoleInterceptor = authorizationRoleInterceptor;
         this.beanFactory = beanFactory;
     }
 
@@ -46,6 +41,7 @@ public class AppConfig implements WebMvcConfigurer {
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(this.traceSleuthInterceptor);
         registry.addInterceptor(this.accessControlInterceptor);
+        registry.addInterceptor(this.authorizationRoleInterceptor);
     }
 
     @Bean("asyncExecutor")
@@ -58,20 +54,6 @@ public class AppConfig implements WebMvcConfigurer {
         executor.initialize();
 
         return new LazyTraceExecutor(beanFactory, executor);
-    }
-
-    @Bean
-    @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
-    public RestTemplate getRestTemplate(
-            RestTemplateBuilder restTemplateBuilder,
-            @Value("${rest.client.default.timeout}") int timeout
-    ) {
-        return restTemplateBuilder
-                .setConnectTimeout(Duration.ofMillis(timeout))
-                .setReadTimeout(Duration.ofMillis(timeout))
-                .interceptors(new LogRestTemplateInterceptor())
-                .requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
-                .build();
     }
 
 }

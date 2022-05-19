@@ -16,11 +16,22 @@ public class Config {
 
     @NotBlank
     private String prefix;
+    @NotBlank
+    private String channelId;
+    @NotNull
+    private Boolean authRoleInterceptorEnabled;
     private SecurityHeaders securityHeaders;
     private SWCharacterRepositoryConfig characterRepository;
+    private UserApiRepository userRepository;
 
     @Data
     public static class SWCharacterRepositoryConfig {
+        @NotBlank
+        private String url;
+    }
+
+    @Data
+    public static class UserApiRepository {
         @NotBlank
         private String url;
     }

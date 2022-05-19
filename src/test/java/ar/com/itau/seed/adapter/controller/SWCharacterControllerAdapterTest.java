@@ -1,6 +1,7 @@
 package ar.com.itau.seed.adapter.controller;
 
 import ar.com.itau.seed.application.port.in.GetSWCharacterByIdQuery;
+import ar.com.itau.seed.application.port.out.UserRepository;
 import ar.com.itau.seed.config.TestConfig;
 import ar.com.itau.seed.config.TestSecurityConfig;
 import ar.com.itau.seed.mock.SWCharacterMockFactory;
@@ -39,6 +40,9 @@ public class SWCharacterControllerAdapterTest {
 
     @MockBean
     private GetSWCharacterByIdQuery getSWCharacterByIdQuery;
+
+    @MockBean
+    private UserRepository userRepository;
 
     @Test
     @DisplayName("when get is called the adapter should return the character it found")

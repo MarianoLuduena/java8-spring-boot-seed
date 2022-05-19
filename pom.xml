@@ -130,6 +130,7 @@
                     <excludes>
                         <exclude>ar/com/itau/seed/Application.class</exclude>
                         <exclude>ar/com/itau/seed/config/SwaggerConfig.class</exclude>
+                        <exclude>ar/com/itau/seed/config/rest/RestConfig.class</exclude>
                     </excludes>
                 </configuration>
                 <executions>

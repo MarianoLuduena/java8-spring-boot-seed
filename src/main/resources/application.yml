@@ -1,6 +1,15 @@
 spring:
   application:
     name: ${APPLICATION_NAME:java8-spring-boot-seed,base-bff,base-error,base-api}
+  sleuth:
+    baggage:
+      remote-fields:
+        - traceId
+        - channelId
+        - enterpriseId
+      correlation-fields:
+        - channelId
+        - enterpriseId
 
 keycloak:
   cors: true
@@ -39,6 +48,8 @@ rest.client.default.timeout: ${service.timeout}
 
 seed:
   prefix: "BFF|API|ACL-SEE:"
+  channel-id: ${mercury.channel.id}
+  auth-role-interceptor-enabled: true
   security-headers:
     allowed-origin:
     allowed-methods: POST,GET,PUT,PATCH,DELETE,OPTIONS
@@ -46,6 +57,8 @@ seed:
       Access-Control-Allowed-Headers,Authorization,Content-Type,clientenv,clientname,clientver,enterpriseid"
   character-repository:
     url: ${seed.character-repository.url}
+  user-repository:
+    url: ${users.api.uri}
 ---
 spring:
   config:
@@ -68,9 +81,13 @@ rest.client.default.timeout: 5000
 
 seed:
   prefix: "BFF|API|ACL-SEE:"
+  channel-id: I
+  auth-role-interceptor-enabled: false
   security-headers:
     allowed-origin:
     allowed-methods:
     allowed-headers:
   character-repository:
     url: https://swapi.dev/api/people/{id}/
+  user-repository:
+    url: https://mercury-back-inte.apps.ocp-np.sis.ad.bia.itau/api/v1/users

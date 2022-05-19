@@ -3,6 +3,7 @@ package ar.com.itau.seed.config;
 import ar.com.itau.seed.adapter.rest.exception.BadRequestRestClientException;
 import ar.com.itau.seed.adapter.rest.exception.RestClientGenericException;
 import ar.com.itau.seed.adapter.rest.exception.TimeoutRestClientException;
+import ar.com.itau.seed.config.exception.ForbiddenException;
 import ar.com.itau.seed.config.exception.NotFoundException;
 import brave.Span;
 import brave.Tracer;
@@ -87,6 +88,22 @@ public class ErrorHandlerTest {
 
         final ErrorHandler.ApiErrorResponse expected =
                 buildApiErrorResponse(HttpStatus.BAD_REQUEST, ex.getMessage(), ErrorCode.BAD_REQUEST);
+
+        Assertions.assertThat(response.getBody())
+                .usingRecursiveComparison()
+                .ignoringFields(TIMESTAMP_FIELD)
+                .isEqualTo(expected);
+    }
+
+    @Test
+    @DisplayName("a ForbiddenException should be mapped to a 403")
+    void testHandleForbiddenException() {
+        final ForbiddenException ex = new ForbiddenException(ErrorCode.FORBIDDEN);
+        final ErrorHandler handler = new ErrorHandler(servletRequest, tracer, config);
+        final ResponseEntity<ErrorHandler.ApiErrorResponse> response = handler.handleForbidden(ex);
+
+        final ErrorHandler.ApiErrorResponse expected =
+                buildApiErrorResponse(HttpStatus.FORBIDDEN, ex.getMessage(), ErrorCode.FORBIDDEN);
 
         Assertions.assertThat(response.getBody())
                 .usingRecursiveComparison()

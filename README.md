@@ -40,19 +40,23 @@ delete this Kickstart section before committing (it won't be needed any longer).
 Since you are trying to setup a new API, it is necessary to get rid of Spring Security and Keycloak. In order to do 
 that, follow these steps:
 
-1. Delete the directories `src/main/java/ar/com/itau/seed/config/security` and 
+1. Delete `AccessControlInterceptor` instance from the `AppConfig` class.
+2. Delete `AuthorizationRoleInterceptor` instance from the `AppConfig` class.
+3. Delete the directories `src/main/java/ar/com/itau/seed/config/security` and 
 `src/main/java/ar/com/itau/seed/config/security`.
-2. Delete `AccessControlInterceptor` instance from the `AppConfig` class.
-3. Delete `SecurityHeaders` inner class from `Config` and `TestConfig` classes. `security-headers` section in 
+4. Delete `SecurityHeaders` inner class and attributes `channelId` and `authRoleInterceptorEnabled` from `Config`
+and `TestConfig` classes. `security-headers` section, `channel-id` and `auth-role-interceptor-enabled` in
 `application.yml` can be safely removed after that.
-4. Delete `TestSecurityConfig.class` from the `@Import` annotation in controller's tests.
-5. Delete the file `src.test.ar.com.itau.seed.config.TestSecurityConfig`.
-6. Delete Keycloak configuration from `application.yml` (inside both `main` and `test`).
-7. Delete artifacts `spring-boot-starter-security`, `keycloak-spring-boot-starter` and `keycloak-adapter-bom`
+5. `UserRepository` interface (and its corresponding Adapter) can be deleted depending on whether they are needed or
+not.
+6. Delete `TestSecurityConfig.class` from the `@Import` annotation in controller's tests.
+7. Delete the file `src.test.ar.com.itau.seed.config.TestSecurityConfig`.
+8. Delete Keycloak configuration from `application.yml` (inside both `main` and `test`).
+9. Delete artifacts `spring-boot-starter-security`, `keycloak-spring-boot-starter` and `keycloak-adapter-bom`
    (dependencyManagement) from `pom.xml`.
-8. Update Karate (Cucumber) features to remove any reference to authorized requests.
-9. Remove `base-bff` and `base-error` from `spring.application.name` in `application.yml`.`
-10. Update `server.servlet.context-path` to leave the `api` or `acl` prefix (remove the `bff` prefix) in 
+10. Update Karate (Cucumber) features to remove any reference to authorized requests.
+11. Remove `base-bff` and `base-error` from `spring.application.name` in `application.yml`.`
+12. Update `server.servlet.context-path` to leave the `api` or `acl` prefix (remove the `bff` prefix) in 
 `application.yml`. Yoy should also change the property `prefix` used to build the error codes.
 
 ### Kickstart a BFF

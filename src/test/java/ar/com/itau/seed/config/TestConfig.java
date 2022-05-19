@@ -41,6 +41,8 @@ public class TestConfig {
     public Config getConfig() {
         final Config config = new Config();
         config.setPrefix("PRE-FIX:");
+        config.setChannelId("I");
+        config.setAuthRoleInterceptorEnabled(false);
 
         final Config.SecurityHeaders securityHeaders = new Config.SecurityHeaders();
         securityHeaders.setAllowedOrigin("*");
@@ -50,8 +52,12 @@ public class TestConfig {
 
         final Config.SWCharacterRepositoryConfig characterRepositoryConfig = new Config.SWCharacterRepositoryConfig();
         characterRepositoryConfig.setUrl("http://localhost:12345/people/{id}");
-
         config.setCharacterRepository(characterRepositoryConfig);
+
+        final Config.UserApiRepository userApiRepository = new Config.UserApiRepository();
+        userApiRepository.setUrl("http://localhost:4567/users");
+        config.setUserRepository(userApiRepository);
+
         return config;
     }
 
