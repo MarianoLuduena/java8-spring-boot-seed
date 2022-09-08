@@ -49,7 +49,7 @@ class SWCharacterControllerAdapterTest {
     void testGetSWCharacterByIdSuccessfully() throws Exception {
         final String expected = objectMapper.writeValueAsString(SWCharacterMockFactory.getSWCharacterControllerModel());
 
-        Mockito.when(getSWCharacterByIdQuery.get(Mockito.eq(SW_CHARACTER_ID)))
+        Mockito.when(getSWCharacterByIdQuery.get(SW_CHARACTER_ID))
                 .thenReturn(CompletableFuture.completedFuture(SWCharacterMockFactory.getSWCharacter()));
 
         final MvcResult result = mockMvc.perform(get(buildGetUrl())).andReturn();

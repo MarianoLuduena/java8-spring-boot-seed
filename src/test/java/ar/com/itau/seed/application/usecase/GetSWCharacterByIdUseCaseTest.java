@@ -26,7 +26,7 @@ class GetSWCharacterByIdUseCaseTest {
     @DisplayName("when get is called it should return a future wrapping a Star Wars character")
     void testGetSWCharacterByIdSuccessfully() {
         final SWCharacter expected = SWCharacterMockFactory.getSWCharacter();
-        Mockito.when(swCharacterRepository.getById(Mockito.eq(SW_CHARACTER_ID)))
+        Mockito.when(swCharacterRepository.getById(SW_CHARACTER_ID))
                 .thenReturn(expected);
 
         final GetSWCharacterByIdUseCase useCase = new GetSWCharacterByIdUseCase(swCharacterRepository, executor);
@@ -38,7 +38,7 @@ class GetSWCharacterByIdUseCaseTest {
     @DisplayName("when get is called and it fails it should propagate the exception")
     void testGetSWCharacterByIdPropagatesException() {
         final ErrorCode errorCode = ErrorCode.CHARACTER_NOT_FOUND;
-        Mockito.when(swCharacterRepository.getById(Mockito.eq(SW_CHARACTER_ID)))
+        Mockito.when(swCharacterRepository.getById(SW_CHARACTER_ID))
                 .thenThrow(new NotFoundException(errorCode));
 
         final GetSWCharacterByIdUseCase useCase = new GetSWCharacterByIdUseCase(swCharacterRepository, executor);

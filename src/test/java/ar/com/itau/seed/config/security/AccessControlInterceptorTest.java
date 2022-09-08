@@ -30,20 +30,20 @@ class AccessControlInterceptorTest {
         final Config.SecurityHeaders expected = config.getSecurityHeaders();
         Mockito.verify(servletResponse, Mockito.times(1))
                 .setHeader(
-                        Mockito.eq(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN),
-                        Mockito.eq(expected.getAllowedOrigin())
+                        HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
+                        expected.getAllowedOrigin()
                 );
 
         Mockito.verify(servletResponse, Mockito.times(1))
                 .setHeader(
-                        Mockito.eq(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS),
-                        Mockito.eq(expected.getAllowedMethods())
+                        HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS,
+                        expected.getAllowedMethods()
                 );
 
         Mockito.verify(servletResponse, Mockito.times(1))
                 .setHeader(
-                        Mockito.eq(HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS),
-                        Mockito.eq(expected.getAllowedHeaders())
+                        HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS,
+                        expected.getAllowedHeaders()
                 );
     }
 
@@ -69,8 +69,8 @@ class AccessControlInterceptorTest {
 
         Mockito.verify(servletResponse, Mockito.times(1))
                 .setHeader(
-                        Mockito.eq(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN),
-                        Mockito.eq(emptyConfig.getSecurityHeaders().getAllowedOrigin())
+                        HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
+                        emptyConfig.getSecurityHeaders().getAllowedOrigin()
                 );
     }
 
