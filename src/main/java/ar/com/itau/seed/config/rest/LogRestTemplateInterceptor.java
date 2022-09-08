@@ -1,12 +1,12 @@
 package ar.com.itau.seed.config.rest;
 
-import io.micrometer.core.instrument.util.IOUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.util.StreamUtils;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
@@ -43,13 +43,12 @@ public class LogRestTemplateInterceptor implements ClientHttpRequestInterceptor 
     }
 
     private void traceResponse(ClientHttpResponse response) throws IOException {
-        final String body = IOUtils.toString(response.getBody(), StandardCharsets.UTF_8);
         log.info(
                 "{} - {} | {} | Response: {}",
-                response.getRawStatusCode(),
-                response.getStatusText(),
+                response.getStatusCode().value(),
+                response.getStatusCode().getReasonPhrase(),
                 concealSensitiveData(response.getHeaders()),
-                body
+                StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8)
         );
     }
 

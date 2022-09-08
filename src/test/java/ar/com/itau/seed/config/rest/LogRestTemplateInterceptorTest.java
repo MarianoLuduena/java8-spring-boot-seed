@@ -13,6 +13,7 @@ import ch.qos.logback.classic.Logger;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpResponse;
@@ -45,8 +46,7 @@ public class LogRestTemplateInterceptorTest {
         Mockito.when(httpRequest.getURI()).thenReturn(URI.create("http://localhost:1666/api"));
         Mockito.when(httpRequest.getHeaders()).thenReturn(headers);
 
-        Mockito.when(httpResponse.getRawStatusCode()).thenReturn(200);
-        Mockito.when(httpResponse.getStatusText()).thenReturn("OK");
+        Mockito.when(httpResponse.getStatusCode()).thenReturn(HttpStatus.OK);
         Mockito.when(httpResponse.getBody()).thenReturn(new BufferedInputStream(new ByteArrayInputStream(BODY)));
         Mockito.when(httpResponse.getHeaders()).thenReturn(headers);
 
