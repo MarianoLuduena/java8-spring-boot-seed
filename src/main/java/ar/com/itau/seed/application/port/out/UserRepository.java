@@ -1,8 +1,10 @@
 package ar.com.itau.seed.application.port.out;
 
+import ar.com.itau.seed.domain.User;
+
 public interface UserRepository {
 
-    String getUserIdByUsername(String username);
+    User getUserByUsername(String username);
 
     boolean hasUserPermission(String userId, String permissionName);
 

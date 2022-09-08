@@ -1,4 +1,4 @@
-package ar.com.itau.seed.adapter.rest.model;
+package ar.com.itau.seed.adapter.rest.model.user;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import lombok.Data;
@@ -6,5 +6,5 @@ import lombok.Data;
 @Data
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class UserPermissionCheckRestModel {
-    Boolean result;
+    private Boolean result;
 }

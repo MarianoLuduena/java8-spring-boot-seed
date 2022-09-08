@@ -1,8 +1,10 @@
 package ar.com.itau.seed.mock;
 
-import ar.com.itau.seed.adapter.rest.model.UserPermissionCheckRestModel;
-import ar.com.itau.seed.adapter.rest.model.UserRestModel;
-import ar.com.itau.seed.adapter.rest.model.UserSearchRestModel;
+import ar.com.itau.seed.adapter.rest.model.user.UserCompanyRestModel;
+import ar.com.itau.seed.adapter.rest.model.user.UserPermissionCheckRestModel;
+import ar.com.itau.seed.adapter.rest.model.user.UserRestModel;
+import ar.com.itau.seed.adapter.rest.model.user.UserSearchRestModel;
+import ar.com.itau.seed.domain.User;
 
 import java.util.Collections;
 
@@ -12,6 +14,10 @@ public class UserMockFactory {
     private static final String DOC_NUMBER = "14038115";
     private static final String DOC_TYPE = "DNI";
     private static final String USERNAME = "intiman1";
+    private static final String ENTERPRISE_ID = "540492";
+    private static final String ACTIVE_STATE = "1";
+    private static final String INACTIVE_STATE = "0";
+    private static final String USER_COMPANY_ROLE = "1";
 
     public static UserSearchRestModel userSearchRestModel() {
         final UserSearchRestModel users = new UserSearchRestModel();
@@ -31,10 +37,30 @@ public class UserMockFactory {
         return userPermissionCheckRestModel;
     }
 
-    public static UserPermissionCheckRestModel userPermissionForbidden() {
-        final UserPermissionCheckRestModel userPermissionCheckRestModel = new UserPermissionCheckRestModel();
-        userPermissionCheckRestModel.setResult(false);
-        return userPermissionCheckRestModel;
+    public static User user() {
+        return User.builder()
+                .id(USER_ID)
+                .enterprises(Collections.singletonList(
+                        User.Company.builder()
+                                .id(ENTERPRISE_ID)
+                                .state(ACTIVE_STATE)
+                                .role(USER_COMPANY_ROLE)
+                                .build()
+                ))
+                .build();
+    }
+
+    public static User inactiveUser() {
+        return User.builder()
+                .id(USER_ID)
+                .enterprises(Collections.singletonList(
+                        User.Company.builder()
+                                .id(ENTERPRISE_ID)
+                                .state(INACTIVE_STATE)
+                                .role(USER_COMPANY_ROLE)
+                                .build()
+                ))
+                .build();
     }
 
     private static UserRestModel userRestModel() {
@@ -43,7 +69,16 @@ public class UserMockFactory {
         user.setDocumentNumber(DOC_NUMBER);
         user.setDocumentType(DOC_TYPE);
         user.setUsername(USERNAME);
+        user.setEnterprises(Collections.singletonList(userCompanyRestModel()));
         return user;
+    }
+
+    private static UserCompanyRestModel userCompanyRestModel() {
+        final UserCompanyRestModel model = new UserCompanyRestModel();
+        model.setId(ENTERPRISE_ID);
+        model.setState(ACTIVE_STATE);
+        model.setRole(USER_COMPANY_ROLE);
+        return model;
     }
 
 }

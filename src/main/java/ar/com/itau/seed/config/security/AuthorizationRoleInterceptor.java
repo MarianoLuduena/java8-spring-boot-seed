@@ -4,8 +4,7 @@ import ar.com.itau.seed.application.port.out.UserRepository;
 import ar.com.itau.seed.config.Config;
 import ar.com.itau.seed.config.ErrorCode;
 import ar.com.itau.seed.config.exception.ForbiddenException;
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
+import ar.com.itau.seed.domain.User;
 import lombok.Value;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
@@ -21,33 +20,39 @@ import java.util.Map;
 import java.util.HashMap;
 import java.util.Collections;
 import java.util.Optional;
-import java.util.Base64;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 @Slf4j
 @Component
 public class AuthorizationRoleInterceptor implements AsyncHandlerInterceptor {
 
     private static final String BEARER_AUTHORIZATION_TYPE = "Bearer ";
-    private static final String JWT_SECTION_DELIMITER = "\\.";
     private static final String ENTERPRISE_ID_HEADER = "enterpriseId";
     private static final String GET_CHARACTER_BY_ID_URL_PATTERN = "^/api/v1/characters/\\d+$";
     private static final String GET_CHARACTER_BY_ID_PERMISSION = "getCharacter";
-    private static final String PREFERRED_USERNAME_CLAIM = "preferred_username";
+    private static final Pattern CONTEXT_PATH = Pattern.compile("^/bff/[a-zA-Z0-9]{1,8}/seed");
+    private static final List<Pattern> WHITELISTED_ENDPOINTS = Stream.of(
+            "^\\/$",
+            "^\\/actuator.*$",
+            "^\\/swagger-ui.*$",
+            "^\\/[a-zA-Z0-9]{1,2}\\/api-docs.*$"
+    ).map(Pattern::compile).collect(Collectors.toList());
 
     private final Config config;
     private final UserRepository userRepository;
-    private final ObjectMapper objectMapper;
+    private final JwtParser jwtParser;
     private final Map<String, List<UriOperationPair>> endpointsByMethod;
 
     public AuthorizationRoleInterceptor(
             final Config config,
             final UserRepository userRepository,
-            final ObjectMapper objectMapper
+            final JwtParser jwtParser
     ) {
         this.config = config;
         this.userRepository = userRepository;
-        this.objectMapper = objectMapper;
+        this.jwtParser = jwtParser;
         this.endpointsByMethod = new HashMap<>();
 
         this.endpointsByMethod.put(
@@ -59,24 +64,35 @@ public class AuthorizationRoleInterceptor implements AsyncHandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
-        if (request.getDispatcherType() != DispatcherType.REQUEST) return true;
-        if (!config.getAuthRoleInterceptorEnabled()) return true;
-
-        if (!canOperationBeExecuted(request)) throw new ForbiddenException(ErrorCode.FORBIDDEN);
-
+        if (request.getDispatcherType() == DispatcherType.REQUEST
+                && config.getAuthRoleInterceptorEnabled()
+                && !canOperationBeExecuted(request)) {
+            throw new ForbiddenException(ErrorCode.FORBIDDEN);
+        }
         return true;
     }
 
-    private boolean canOperationBeExecuted(HttpServletRequest request) {
+    private boolean canOperationBeExecuted(final HttpServletRequest request) {
         try {
-            final String permissionName = getPermissionNameForOperation(request.getMethod(), request.getRequestURI());
+            final String requestUri = CONTEXT_PATH.matcher(request.getRequestURI()).replaceFirst("");
+            if (isUriWhitelisted(requestUri)) return true;
+            final String permissionName = getPermissionNameForOperation(request.getMethod(), requestUri);
             final String enterpriseId = Optional.ofNullable(request.getHeader(ENTERPRISE_ID_HEADER)).orElse("");
             final String username = getUsernameFromRequest(request);
             return isPermissionValidForUser(username, permissionName, enterpriseId);
-        } catch (Throwable ex) {
+        } catch (Exception ex) {
             log.error("Cannot grant access to {} {}", request.getMethod(), request.getRequestURI(), ex);
             return false;
         }
+    }
+
+    private boolean isUriWhitelisted(final String uri) {
+        for (Pattern whitelistPattern : WHITELISTED_ENDPOINTS) {
+            if (whitelistPattern.matcher(uri).matches()) {
+                return true;
+            }
+        }
+        return false;
     }
 
     private String getPermissionNameForOperation(final String method, final String uri) {
@@ -96,10 +112,8 @@ public class AuthorizationRoleInterceptor implements AsyncHandlerInterceptor {
 
     private String extractUsernameFromJwt(final String jwt) {
         try {
-            final String encodedPayload = jwt.split(JWT_SECTION_DELIMITER)[1];
-            final JsonNode json = objectMapper.readTree(Base64.getUrlDecoder().decode(encodedPayload));
-            return json.get(PREFERRED_USERNAME_CLAIM).asText("");
-        } catch (Throwable ex) {
+            return jwtParser.parse(jwt).getPayload().getPreferredUsername();
+        } catch (Exception ex) {
             log.error("Could not get username from JWT", ex);
             return "";
         }
@@ -110,9 +124,12 @@ public class AuthorizationRoleInterceptor implements AsyncHandlerInterceptor {
             final String permissionName,
             final String enterpriseId
     ) {
-        if (username.isEmpty() || permissionName.isEmpty() || enterpriseId.isEmpty()) return false;
-        final String userId = userRepository.getUserIdByUsername(username);
-        return userRepository.hasUserPermission(userId, permissionName);
+        if (!username.isEmpty() && !permissionName.isEmpty() && !enterpriseId.isEmpty()) {
+            final User user = userRepository.getUserByUsername(username);
+            if (user.hasCompanyAccess(enterpriseId))
+                return userRepository.hasUserPermission(user.getId(), permissionName);
+        }
+        return false;
     }
 
     @Value

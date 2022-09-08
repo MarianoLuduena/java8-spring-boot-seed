@@ -1,5 +1,7 @@
 package ar.com.itau.seed.config;
 
+import ar.com.itau.seed.config.security.JwtParser;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.boot.test.context.TestConfiguration;
@@ -59,6 +61,11 @@ public class TestConfig {
         config.setUserRepository(userApiRepository);
 
         return config;
+    }
+
+    @Bean
+    public JwtParser jwtParser(final ObjectMapper objectMapper) {
+        return new JwtParser(objectMapper);
     }
 
 }

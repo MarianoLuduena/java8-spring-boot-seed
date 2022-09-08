@@ -24,14 +24,12 @@ public class AccessControlInterceptor implements AsyncHandlerInterceptor {
             HttpServletResponse response,
             Object handler
     ) {
-        if (request.getDispatcherType() == DispatcherType.ASYNC) {
-            return true;
+        if (request.getDispatcherType() != DispatcherType.ASYNC) {
+            final Config.SecurityHeaders headers = config.getSecurityHeaders();
+            setHeaderIfNotEmpty(response, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, headers.getAllowedOrigin());
+            setHeaderIfNotEmpty(response, HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, headers.getAllowedMethods());
+            setHeaderIfNotEmpty(response, HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, headers.getAllowedHeaders());
         }
-
-        final Config.SecurityHeaders headers = config.getSecurityHeaders();
-        setHeaderIfNotEmpty(response, HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN, headers.getAllowedOrigin());
-        setHeaderIfNotEmpty(response, HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, headers.getAllowedMethods());
-        setHeaderIfNotEmpty(response, HttpHeaders.ACCESS_CONTROL_ALLOW_HEADERS, headers.getAllowedHeaders());
 
         return true;
     }

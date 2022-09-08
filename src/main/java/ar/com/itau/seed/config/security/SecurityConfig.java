@@ -46,7 +46,7 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
     protected void configure(HttpSecurity http) throws Exception {
         super.configure(http);
         http
-                .cors().and().csrf().disable()
+                .cors().and().csrf().disable()//NOSONAR this is not implemented in the frontend yet
                 .sessionManagement()
                 .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
                 .and()
@@ -56,8 +56,8 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                         "/actuator/**",
                         "/swagger-ui/index.html",
                         "/swagger-ui/**",
-                        "/v3/api-docs**",
-                        "/v3/api-docs/**"
+                        "/v3/api-docs/**",
+                        "/v3/api-docs**"
                 ).anonymous()
                 .and()
                 .authorizeRequests()

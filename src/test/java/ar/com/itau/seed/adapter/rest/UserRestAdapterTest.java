@@ -1,10 +1,11 @@
 package ar.com.itau.seed.adapter.rest;
 
-import ar.com.itau.seed.adapter.rest.model.UserPermissionCheckRestModel;
-import ar.com.itau.seed.adapter.rest.model.UserSearchRestModel;
+import ar.com.itau.seed.adapter.rest.model.user.UserPermissionCheckRestModel;
+import ar.com.itau.seed.adapter.rest.model.user.UserSearchRestModel;
 import ar.com.itau.seed.config.ErrorCode;
 import ar.com.itau.seed.config.TestConfig;
 import ar.com.itau.seed.config.exception.NotFoundException;
+import ar.com.itau.seed.domain.User;
 import ar.com.itau.seed.mock.UserMockFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -70,8 +71,8 @@ class UserRestAdapterTest {
                 .andExpect(header(CHANNEL_ID_HEADER, CHANNEL_ID))
                 .andExpect(header(TRACE_ID_HEADER, TRACE_ID))
                 .andRespond(withSuccess(detailString, MediaType.APPLICATION_JSON));
-        final String actual = client.getUserIdByUsername(USERNAME);
-        Assertions.assertThat(actual).isEqualTo(model.getUsers().get(0).getId());
+        final User actual = client.getUserByUsername(USERNAME);
+        Assertions.assertThat(actual).isEqualTo(UserMockFactory.user());
     }
 
     @Test
@@ -84,7 +85,7 @@ class UserRestAdapterTest {
                 .andExpect(header(TRACE_ID_HEADER, TRACE_ID))
                 .andRespond(withSuccess(detailString, MediaType.APPLICATION_JSON));
 
-        final Throwable thrown = Assertions.catchThrowable(() -> client.getUserIdByUsername(USERNAME));
+        final Throwable thrown = Assertions.catchThrowable(() -> client.getUserByUsername(USERNAME));
 
         Assertions.assertThat(thrown)
                 .isExactlyInstanceOf(NotFoundException.class)

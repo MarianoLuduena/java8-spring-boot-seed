@@ -1,20 +1,19 @@
 package ar.com.itau.seed.adapter.rest;
 
-import ar.com.itau.seed.adapter.rest.handler.RestTemplateErrorHandler;
-import ar.com.itau.seed.adapter.rest.model.UserPermissionCheckRestModel;
-import ar.com.itau.seed.adapter.rest.model.UserRestModel;
-import ar.com.itau.seed.adapter.rest.model.UserSearchRestModel;
+import ar.com.itau.seed.adapter.rest.model.user.UserPermissionCheckRestModel;
+import ar.com.itau.seed.adapter.rest.model.user.UserRestModel;
+import ar.com.itau.seed.adapter.rest.model.user.UserSearchRestModel;
 import ar.com.itau.seed.application.port.out.UserRepository;
 import ar.com.itau.seed.config.Config;
 import ar.com.itau.seed.config.ErrorCode;
 import ar.com.itau.seed.config.exception.NotFoundException;
+import ar.com.itau.seed.domain.User;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Repository;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.Collections;
 import java.util.Optional;
 
 @Repository
@@ -23,8 +22,9 @@ public class UserRestAdapter implements UserRepository {
     private static final String USERS_RESOURCE = "/users";
     private static final String PERMISSIONS_RESOURCE = "/permissions";
     private static final String PERMISSION_NAME_RESOURCE = "/name";
-    private static final String USERNAME_QUERY_PARAM = "userName";
+    private static final String USERNAME_QUERY_PARAM = "userName=";
     private static final String AUDIT_USER_HEADER = "auditUser";
+    private static final String QUERY_STRING_DELIMITER = "?";
 
     private final RestTemplate restTemplate;
     private final Config config;
@@ -35,20 +35,18 @@ public class UserRestAdapter implements UserRepository {
             final Config config,
             final HeadersProvider headersProvider
     ) {
-        restTemplate.setErrorHandler(new RestTemplateErrorHandler(Collections.emptyMap()));
-
         this.restTemplate = restTemplate;
         this.config = config;
         this.headersProvider = headersProvider;
     }
 
-    public String getUserIdByUsername(final String username) {
+    public User getUserByUsername(final String username) {
         final String url = buildUserByUsernameUrl(username);
         final HttpEntity<Void> httpEntity = new HttpEntity<>(headersProvider.get());
         return Optional.ofNullable(restTemplate.exchange(url, HttpMethod.GET, httpEntity, UserSearchRestModel.class)
                         .getBody())
                 .flatMap(userSearchRestModel -> userSearchRestModel.getUsers().stream().findFirst())
-                .map(UserRestModel::getId)
+                .map(UserRestModel::toDomain)
                 .orElseThrow(() -> new NotFoundException(ErrorCode.RESOURCE_NOT_FOUND));
     }
 
@@ -66,7 +64,7 @@ public class UserRestAdapter implements UserRepository {
     }
 
     private String buildUserByUsernameUrl(final String username) {
-        return buildUsersResourcePath() + "?" + USERNAME_QUERY_PARAM + "=" + username;
+        return buildUsersResourcePath() + QUERY_STRING_DELIMITER + USERNAME_QUERY_PARAM + username;
     }
 
     private String buildHasPermissionByUserIdAndPermissionName(final String userId, final String permissionName) {
