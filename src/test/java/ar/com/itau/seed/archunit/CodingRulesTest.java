@@ -14,7 +14,7 @@ import static com.tngtech.archunit.library.GeneralCodingRules.NO_CLASSES_SHOULD_
 
 @AnalyzeClasses(packages = "ar.com.itau.seed", importOptions = ImportOption.DoNotIncludeTests.class)
 @SuppressWarnings("squid:S2187")
-public class CodingRulesTest {
+class CodingRulesTest {
 
     @ArchTest
     public static final ArchRule exceptions_should_respect_naming_convention =

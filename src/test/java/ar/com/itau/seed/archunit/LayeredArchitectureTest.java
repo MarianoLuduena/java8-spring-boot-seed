@@ -8,7 +8,7 @@ import com.tngtech.archunit.library.Architectures;
 
 @AnalyzeClasses(packages = "ar.com.itau.seed", importOptions = ImportOption.DoNotIncludeTests.class)
 @SuppressWarnings("squid:S2187")
-public class LayeredArchitectureTest {
+class LayeredArchitectureTest {
 
     private static final String DOMAIN = "Domain";
     private static final String ADAPTERS = "Adapters";

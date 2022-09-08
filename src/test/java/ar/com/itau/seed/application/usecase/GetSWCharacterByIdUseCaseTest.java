@@ -15,7 +15,7 @@ import java.util.concurrent.CompletionException;
 import java.util.concurrent.Executor;
 
 @DisplayName("GetSWCharacterById Use Case Test")
-public class GetSWCharacterByIdUseCaseTest {
+class GetSWCharacterByIdUseCaseTest {
 
     private static final int SW_CHARACTER_ID = 4;
     private static final Executor executor = ExecutorMockFactory.get();

@@ -25,7 +25,7 @@ import java.net.URI;
 import java.util.Collections;
 
 @DisplayName("LogRestTemplateInterceptor Test")
-public class LogRestTemplateInterceptorTest {
+class LogRestTemplateInterceptorTest {
 
     private static final byte[] BODY = "{ \"foo\": \"bar\" }".getBytes();
 

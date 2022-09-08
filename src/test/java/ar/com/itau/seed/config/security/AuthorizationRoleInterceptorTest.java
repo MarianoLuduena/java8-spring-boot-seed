@@ -20,7 +20,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.util.Base64;
 
 @DisplayName("AuthorizationRoleInterceptor Test")
-public class AuthorizationRoleInterceptorTest {
+class AuthorizationRoleInterceptorTest {
 
     private static final TestConfig TEST_CONFIG = new TestConfig();
     private static final Config CONFIG = TEST_CONFIG.getConfig();

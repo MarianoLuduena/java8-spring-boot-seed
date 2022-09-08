@@ -14,7 +14,7 @@ import org.springframework.http.HttpHeaders;
 import java.util.Collections;
 
 @DisplayName("HeadersProvider Test")
-public class HeadersProviderTest {
+class HeadersProviderTest {
 
     private static final Config CONFIG = new TestConfig().getConfig();
     private static final String TRACE_ID_HEADER = "traceId";

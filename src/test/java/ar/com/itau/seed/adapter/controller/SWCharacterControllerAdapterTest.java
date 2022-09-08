@@ -27,7 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @DisplayName("SWCharacter Adapter Test")
 @WebMvcTest(SWCharacterControllerAdapter.class)
 @Import({TestConfig.class, TestSecurityConfig.class})
-public class SWCharacterControllerAdapterTest {
+class SWCharacterControllerAdapterTest {
 
     private static final int SW_CHARACTER_ID = 4;
     private static final String CHARACTERS_URL = "/api/v1/characters";

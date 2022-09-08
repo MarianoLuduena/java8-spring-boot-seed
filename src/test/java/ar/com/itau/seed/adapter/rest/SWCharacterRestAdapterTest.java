@@ -30,7 +30,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @DisplayName("SWCharacterRest Adapter Test")
 @Import(TestConfig.class)
 @RestClientTest({SWCharacterRestAdapter.class})
-public class SWCharacterRestAdapterTest {
+class SWCharacterRestAdapterTest {
 
     private static final String BASE_URI = "http://localhost:12345/people/{id}";
     private static final int SW_CHARACTER_ID = 4;

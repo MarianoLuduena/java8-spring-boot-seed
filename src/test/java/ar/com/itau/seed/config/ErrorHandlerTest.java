@@ -26,7 +26,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @DisplayName("ErrorHandler Test")
-public class ErrorHandlerTest {
+class ErrorHandlerTest {
 
     private static final String REQUEST_URL = "/api/v1/resources";
     private static final Long TRACE_ID = 128L;

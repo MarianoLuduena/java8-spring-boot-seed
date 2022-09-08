@@ -12,7 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 @DisplayName("AccessControlInterceptor Test")
-public class AccessControlInterceptorTest {
+class AccessControlInterceptorTest {
 
     private final HttpServletRequest servletRequest = Mockito.mock(HttpServletRequest.class);
     private final HttpServletResponse servletResponse = Mockito.mock(HttpServletResponse.class);

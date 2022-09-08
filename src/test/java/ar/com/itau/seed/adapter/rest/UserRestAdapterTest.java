@@ -28,7 +28,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
 @DisplayName("UserRest Adapter Test")
 @Import(TestConfig.class)
 @RestClientTest({UserRestAdapter.class})
-public class UserRestAdapterTest {
+class UserRestAdapterTest {
 
     private static final String TRACE_ID_HEADER = "traceId";
     private static final String TRACE_ID = "someTraceId";
