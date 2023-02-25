@@ -20,3 +20,10 @@ rest:
   client:
     default:
       timeout: 10000
+
+async:
+  default-executor:
+    core-pool-size: 5
+    max-pool-size: 5
+    thread-name-prefix: "test-async-"
+    queue-capacity: 10

@@ -16,7 +16,10 @@ import org.springframework.web.client.RestTemplate;
 import java.time.Duration;
 
 @TestConfiguration
-@ComponentScan("org.springframework.cloud.sleuth.autoconfig.brave")
+@ComponentScan({
+        "org.springframework.cloud.sleuth.autoconfig.brave",
+        "ar.com.itau.seed.config.async"
+})
 public class TestConfig {
 
     /**

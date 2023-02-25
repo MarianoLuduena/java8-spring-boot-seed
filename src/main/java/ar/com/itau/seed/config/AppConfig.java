@@ -1,5 +1,6 @@
 package ar.com.itau.seed.config;
 
+import ar.com.itau.seed.config.async.AsyncConfig;
 import ar.com.itau.seed.config.security.AccessControlInterceptor;
 import ar.com.itau.seed.config.security.AuthorizationRoleInterceptor;
 import org.springframework.beans.factory.BeanFactory;
@@ -15,9 +16,6 @@ import java.util.concurrent.Executor;
 @Configuration
 public class AppConfig implements WebMvcConfigurer {
 
-    private static final int CORE_POOL_SIZE = 20;
-    private static final int MAX_POOL_SIZE = 1000;
-    private static final String ASYNC_PREFIX = "async-";
     private static final boolean WAIT_FOR_TASK_TO_COMPLETE_ON_SHUTDOWN = true;
 
     private final TraceSleuthInterceptor traceSleuthInterceptor;
@@ -45,12 +43,14 @@ public class AppConfig implements WebMvcConfigurer {
     }
 
     @Bean("asyncExecutor")
-    public Executor getAsyncExecutor() {
+    public Executor getAsyncExecutor(final AsyncConfig asyncConfig) {
+        final AsyncConfig.ExecutorConfig defaultExecutorConfig = asyncConfig.getDefaultExecutor();
         ThreadPoolTaskExecutor executor = new ThreadPoolTaskExecutor();
-        executor.setCorePoolSize(CORE_POOL_SIZE);
-        executor.setMaxPoolSize(MAX_POOL_SIZE);
+        executor.setCorePoolSize(defaultExecutorConfig.getCorePoolSize());
+        executor.setMaxPoolSize(defaultExecutorConfig.getMaxPoolSize());
+        executor.setQueueCapacity(defaultExecutorConfig.getQueueCapacity());
         executor.setWaitForTasksToCompleteOnShutdown(WAIT_FOR_TASK_TO_COMPLETE_ON_SHUTDOWN);
-        executor.setThreadNamePrefix(ASYNC_PREFIX);
+        executor.setThreadNamePrefix(defaultExecutorConfig.getThreadNamePrefix());
         executor.initialize();
 
         return new LazyTraceExecutor(beanFactory, executor);

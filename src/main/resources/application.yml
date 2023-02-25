@@ -46,6 +46,13 @@ keycloak:
 
 rest.client.default.timeout: ${service.timeout}
 
+async:
+  default-executor:
+    core-pool-size: 20
+    max-pool-size: 50
+    thread-name-prefix: "async-"
+    queue-capacity: 100
+
 seed:
   prefix: "BFF|API|ACL-SEE:"
   channel-id: ${mercury.channel.id}
@@ -78,6 +85,13 @@ keycloak:
   resource: mercury
 
 rest.client.default.timeout: 5000
+
+async:
+  default-executor:
+    core-pool-size: 10
+    max-pool-size: 15
+    thread-name-prefix: "async-"
+    queue-capacity: 100
 
 seed:
   prefix: "BFF|API|ACL-SEE:"
