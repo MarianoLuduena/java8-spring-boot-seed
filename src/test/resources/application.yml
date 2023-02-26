@@ -18,8 +18,8 @@ keycloak:
 
 rest:
   client:
-    default:
-      timeout: 10000
+    connect-timeout: 5000
+    read-timeout: 10000
 
 async:
   default-executor:

@@ -65,8 +65,8 @@ Feature: Get Star Wars characters
     And match response == errorSchema
     And match response.name == 'Not Found'
     And match response.status == 404
-    And match response.code == 'BFF|API|ACL-SEE:104'
-    And match response.description == 'Star Wars character not found'
+    And match response.code == 'BFF|API|ACL-SEE:404:'
+    And match response.description == ''
 
   Scenario: Get character without credentials
     Given url lukeUrl

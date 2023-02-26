@@ -44,7 +44,10 @@ keycloak:
   realm: ${access-management.users.realm}
   resource: mercury
 
-rest.client.default.timeout: ${service.timeout}
+rest:
+  client:
+    connect-timeout: ${service.timeout}
+    read-timeout: 20000
 
 async:
   default-executor:
@@ -84,7 +87,10 @@ keycloak:
   realm: HomeBankingEmpresas
   resource: mercury
 
-rest.client.default.timeout: 5000
+rest:
+  client:
+    connect-timeout: 5000
+    read-timeout: 10000
 
 async:
   default-executor:

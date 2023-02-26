@@ -1,24 +1,25 @@
 package ar.com.itau.seed.config;
 
-public enum ErrorCode {
+import java.io.Serializable;
 
-    INTERNAL_ERROR(100, "Internal server error"),
-    BAD_REQUEST(101, "Bad request"),
-    RESOURCE_NOT_FOUND(102, "Not found"),
-    CHARACTER_BAD_REQUEST(103, "Bad request querying for character"),
-    CHARACTER_NOT_FOUND(104, "Star Wars character not found"),
-    CHARACTER_TIMEOUT(105, "Timeout when querying character"),
-    FORBIDDEN(106, "Not allowed to access the resource");
+public class ErrorCode implements Serializable {
 
-    private final int value;
+    public static final ErrorCode INTERNAL_ERROR = new ErrorCode("999", "Internal server error");
+    public static final ErrorCode BAD_REQUEST = new ErrorCode("101", "Bad request");
+    public static final ErrorCode RESOURCE_NOT_FOUND = new ErrorCode("102", "Not found");
+    public static final ErrorCode CHARACTER_NOT_FOUND = new ErrorCode("103", "Star Wars character not found");
+    public static final ErrorCode FORBIDDEN = new ErrorCode("104", "Not allowed to access the resource");
+    public static final ErrorCode TIMEOUT = new ErrorCode("105", "Timeout");
+
+    private final String value;
     private final String reasonPhrase;
 
-    ErrorCode(int value, String reasonPhrase) {
+    public ErrorCode(final String value, final String reasonPhrase) {
         this.value = value;
         this.reasonPhrase = reasonPhrase;
     }
 
-    public int value() {
+    public String value() {
         return this.value;
     }
 

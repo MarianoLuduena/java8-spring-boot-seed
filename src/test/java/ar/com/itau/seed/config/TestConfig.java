@@ -1,5 +1,6 @@
 package ar.com.itau.seed.config;
 
+import ar.com.itau.seed.adapter.rest.handler.RestTemplateErrorHandler;
 import ar.com.itau.seed.config.security.JwtParser;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,13 +32,16 @@ public class TestConfig {
     @Bean
     @Scope(ConfigurableBeanFactory.SCOPE_PROTOTYPE)
     public RestTemplate getRestTemplate(
-            RestTemplateBuilder restTemplateBuilder,
-            @Value("${rest.client.default.timeout}") int timeout
+            final RestTemplateBuilder restTemplateBuilder,
+            @Value("${rest.client.connect-timeout}") final int connectTimeout,
+            @Value("${rest.client.read-timeout}") final int readTimeout,
+            final ObjectMapper objectMapper
     ) {
         return restTemplateBuilder
-                .setConnectTimeout(Duration.ofMillis(timeout))
-                .setReadTimeout(Duration.ofMillis(timeout))
+                .setConnectTimeout(Duration.ofMillis(connectTimeout))
+                .setReadTimeout(Duration.ofMillis(readTimeout))
                 .requestFactory(() -> new BufferingClientHttpRequestFactory(new SimpleClientHttpRequestFactory()))
+                .errorHandler(new RestTemplateErrorHandler(objectMapper))
                 .build();
     }
 

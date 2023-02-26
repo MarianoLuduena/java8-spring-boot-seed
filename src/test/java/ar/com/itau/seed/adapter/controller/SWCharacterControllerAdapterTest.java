@@ -64,7 +64,7 @@ class SWCharacterControllerAdapterTest {
     void testGetSWCharacterByIdWithAnInvalidId() throws Exception {
         final String expected = "{ \"name\": \"Bad Request\", " +
                 "\"description\": \"get.id: must be greater than 0\", " +
-                "\"code\": \"PRE-FIX:101\" }";
+                "\"code\": \"PRE-FIX:400:101\" }";
 
         mockMvc.perform(get(buildInvalidGetUrl()))
                 .andDo(print())
