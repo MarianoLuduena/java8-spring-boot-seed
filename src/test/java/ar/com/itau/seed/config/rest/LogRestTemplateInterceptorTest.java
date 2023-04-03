@@ -28,10 +28,15 @@ import java.util.Collections;
 class LogRestTemplateInterceptorTest {
 
     private static final byte[] BODY = "{ \"foo\": \"bar\" }".getBytes();
+    private static final int MAX_REQUEST_BODY_SIZE = 4 * 1024;
 
+    private final Logger logger = (Logger) LoggerFactory.getLogger(LogRestTemplateInterceptor.class);
     private final HttpRequest httpRequest = Mockito.mock(HttpRequest.class);
     private final ClientHttpRequestExecution execution = Mockito.mock(ClientHttpRequestExecution.class);
     private final ClientHttpResponse httpResponse = Mockito.mock(ClientHttpResponse.class);
+
+    private ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
+    private LogRestTemplateInterceptor interceptor;
 
     @BeforeEach
     void setup() throws IOException {
@@ -52,32 +57,72 @@ class LogRestTemplateInterceptorTest {
 
         Mockito.when(execution.execute(Mockito.any(HttpRequest.class), Mockito.any()))
                 .thenReturn(httpResponse);
+
+        listAppender = new ListAppender<>();
+        listAppender.start();
+        logger.addAppender(listAppender);
+
+        interceptor = new LogRestTemplateInterceptor();
     }
 
     @AfterEach
     void cleanUp() throws IOException {
+        logger.detachAndStopAllAppenders();
         httpResponse.getBody().close();
     }
 
     @Test
     void testLogInterceptedRestRequest() throws IOException {
-        // Given
-        final Logger logger = (Logger) LoggerFactory.getLogger(LogRestTemplateInterceptor.class);
-        final ListAppender<ILoggingEvent> listAppender = new ListAppender<>();
-        listAppender.start();
-        logger.addAppender(listAppender);
+        final ClientHttpResponse response = interceptor.intercept(httpRequest, BODY, execution);
 
-        final LogRestTemplateInterceptor interceptor = new LogRestTemplateInterceptor();
-
-        // When
-        interceptor.intercept(httpRequest, BODY, execution);
-
-        // Then
-        listAppender.stop();
+        response.close();
 
         Assertions.assertThat(listAppender.list.get(0).getFormattedMessage())
                 .isEqualTo("POST http://localhost:1666/api | [Authorization=[Basic YWRtaW...], " +
                         "Accept=[application/json]] { \"foo\": \"bar\" }");
+
+        Assertions.assertThat(listAppender.list.get(1).getFormattedMessage())
+                .isEqualTo("200 - OK | [Authorization=[Basic YWRtaW...], Accept=[application/json]] | " +
+                        "Response: { \"foo\": \"bar\" }");
+    }
+
+    @Test
+    void testLogInterceptedRestRequestWhenResponseIsOctetStream() throws IOException {
+        // Given
+        final HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentLength(BODY.length);
+        Mockito.when(httpResponse.getHeaders()).thenReturn(headers);
+
+        // When
+        final ClientHttpResponse response = interceptor.intercept(httpRequest, BODY, execution);
+
+        // Then
+        response.close();
+
+        Assertions.assertThat(listAppender.list.get(0).getFormattedMessage())
+                .isEqualTo("POST http://localhost:1666/api | [Authorization=[Basic YWRtaW...], " +
+                        "Accept=[application/json]] { \"foo\": \"bar\" }");
+
+        Assertions.assertThat(listAppender.list.get(1).getFormattedMessage())
+                .isEqualTo("200 - OK | [Content-Type=[application/octet-stream], " +
+                        "Content-Length=[" + BODY.length + "]] | Response: [" + BODY.length + " bytes]");
+    }
+
+    @Test
+    void testLogInterceptedRestRequestWhenRequestIsTooBig() throws IOException {
+        // Given
+        final byte[] reallyLongBody = new byte[MAX_REQUEST_BODY_SIZE + 1];
+
+        // When
+        final ClientHttpResponse response = interceptor.intercept(httpRequest, reallyLongBody, execution);
+
+        // Then
+        response.close();
+
+        Assertions.assertThat(listAppender.list.get(0).getFormattedMessage())
+                .isEqualTo("POST http://localhost:1666/api | [Authorization=[Basic YWRtaW...], " +
+                        "Accept=[application/json]] [4097 bytes]");
 
         Assertions.assertThat(listAppender.list.get(1).getFormattedMessage())
                 .isEqualTo("200 - OK | [Authorization=[Basic YWRtaW...], Accept=[application/json]] | " +

@@ -3,6 +3,8 @@ package ar.com.itau.seed.config.rest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpRequest;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
@@ -21,6 +23,7 @@ public class LogRestTemplateInterceptor implements ClientHttpRequestInterceptor 
 
     private static final String AUTHORIZATION_HEADER = "Authorization";
     private static final String AUTHORIZATION_VALUE_SUFFIX = "...";
+    private static final int MAX_REQUEST_BODY_LENGTH_TO_LOG = 4 * 1024;
 
     @Override
     public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
@@ -33,22 +36,34 @@ public class LogRestTemplateInterceptor implements ClientHttpRequestInterceptor 
     }
 
     private void traceRequest(HttpRequest request, byte[] body) {
+        final String bodyToLog =
+                body.length > MAX_REQUEST_BODY_LENGTH_TO_LOG
+                        ? "[" + body.length + " bytes]"
+                        : new String(body, StandardCharsets.UTF_8);
+
         log.info(
                 "{} {} | {} {}",
                 request.getMethod(),
                 request.getURI(),
                 concealSensitiveData(request.getHeaders()),
-                new String(body, StandardCharsets.UTF_8)
+                bodyToLog
         );
     }
 
     private void traceResponse(ClientHttpResponse response) throws IOException {
+        final HttpStatus httpStatus = response.getStatusCode();
+        final HttpHeaders headers = response.getHeaders();
+        final String body =
+                MediaType.APPLICATION_OCTET_STREAM.equals(headers.getContentType())
+                        ? "[" + headers.getContentLength() + " bytes]"
+                        : StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8);
+
         log.info(
                 "{} - {} | {} | Response: {}",
-                response.getStatusCode().value(),
-                response.getStatusCode().getReasonPhrase(),
-                concealSensitiveData(response.getHeaders()),
-                StreamUtils.copyToString(response.getBody(), StandardCharsets.UTF_8)
+                httpStatus.value(),
+                httpStatus.getReasonPhrase(),
+                concealSensitiveData(headers),
+                body
         );
     }
 
