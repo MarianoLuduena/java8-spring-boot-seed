@@ -2,6 +2,7 @@ package ar.com.itau.seed.config.security;
 
 import ar.com.itau.seed.config.Config;
 import ar.com.itau.seed.config.TestConfig;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
@@ -53,7 +54,10 @@ class AccessControlInterceptorTest {
         Mockito.when(servletRequest.getDispatcherType()).thenReturn(DispatcherType.ASYNC);
 
         final AccessControlInterceptor interceptor = new AccessControlInterceptor(config);
-        interceptor.preHandle(servletRequest, servletResponse, "");
+        final boolean actual = interceptor.preHandle(servletRequest, servletResponse, "");
+
+        Assertions.assertThat(actual).isTrue();
+        Mockito.verify(servletResponse, Mockito.never()).setHeader(Mockito.anyString(), Mockito.anyString());
     }
 
     @Test
