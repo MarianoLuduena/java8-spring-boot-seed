@@ -2,7 +2,9 @@ package ar.com.itau.seed.adapter.controller;
 
 import ar.com.itau.seed.adapter.controller.model.SWCharacterControllerModel;
 import ar.com.itau.seed.application.port.in.GetSWCharacterByIdQuery;
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -25,7 +27,12 @@ public class SWCharacterControllerAdapter {
         this.getSWCharacterByIdQuery = getSWCharacterByIdQuery;
     }
 
-    @GetMapping("/{id}")
+    @GetMapping(value = "/{id}", produces = MediaType.APPLICATION_JSON_VALUE)
+    @Operation(
+            tags = {"Characters"},
+            summary = "Get character",
+            description = "Get a character by its unique ID"
+    )
     public CompletionStage<SWCharacterControllerModel> get(
             @NotNull @Positive @PathVariable("id") final Integer id
     ) {

@@ -27,13 +27,15 @@ public class SwaggerConfig {
 
             openApi.getPaths().values().forEach(pathItem -> pathItem.readOperations().forEach(operation -> {
                 final ApiResponses apiResponses = operation.getResponses();
-                Arrays.asList(HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.NOT_FOUND,
-                                HttpStatus.INTERNAL_SERVER_ERROR)
-                        .forEach(status -> apiResponses.addApiResponse(
-                                        String.valueOf(status.value()),
-                                        buildApiResponse(status.getReasonPhrase(), errorSchema)
-                                )
-                        );
+                Arrays.asList(
+                        HttpStatus.BAD_REQUEST, HttpStatus.UNAUTHORIZED, HttpStatus.FORBIDDEN, HttpStatus.NOT_FOUND,
+                        HttpStatus.UNPROCESSABLE_ENTITY, HttpStatus.INTERNAL_SERVER_ERROR, HttpStatus.GATEWAY_TIMEOUT
+                ).forEach(status ->
+                        apiResponses.addApiResponse(
+                                String.valueOf(status.value()),
+                                buildApiResponse(status.getReasonPhrase(), errorSchema)
+                        )
+                );
             }));
         };
     }
