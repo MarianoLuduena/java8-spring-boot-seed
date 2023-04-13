@@ -1,6 +1,5 @@
 package ar.com.itau.seed.config.security;
 
-import org.keycloak.adapters.springboot.KeycloakSpringBootConfigResolver;
 import org.keycloak.adapters.springsecurity.KeycloakConfiguration;
 import org.keycloak.adapters.springsecurity.authentication.KeycloakAuthenticationProvider;
 import org.keycloak.adapters.springsecurity.config.KeycloakWebSecurityConfigurerAdapter;
@@ -62,17 +61,6 @@ public class SecurityConfig extends KeycloakWebSecurityConfigurerAdapter {
                 .and()
                 .authorizeRequests()
                 .anyRequest().hasRole("user");
-    }
-
-    /**
-     * keycloakConfigResolver defines that we want to use the Spring Boot properties file support instead of the
-     * default keycloak.json
-     *
-     * @return KeycloakSpringBootConfigResolver
-     */
-    @Bean
-    public KeycloakSpringBootConfigResolver keycloakConfigResolver() {
-        return new KeycloakSpringBootConfigResolver();
     }
 
 }
