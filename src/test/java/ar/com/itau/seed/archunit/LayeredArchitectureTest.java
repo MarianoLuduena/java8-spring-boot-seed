@@ -18,6 +18,7 @@ class LayeredArchitectureTest {
 
     @ArchTest
     public static final ArchRule layer_dependencies_are_respected = Architectures.layeredArchitecture()
+            .consideringOnlyDependenciesInLayers()
             .layer(CONFIG).definedBy(BASE_PKG + "config..")
             .layer(DOMAIN).definedBy(BASE_PKG + "domain..")
             .layer(ADAPTERS).definedBy(BASE_PKG + "adapter..")
